@@ -76,18 +76,15 @@ class ConjugationRNN(nn.Module):
         # Fully connected layer
         self.fc = nn.Linear(num_hiddens, 12)  # Between recurrent and output. There are 12 possible conjugations
 
-    def forward(self, x, H=None):
+    def forward(self, x, hidden=None):
         out = self.embedding(x)
-        out = self.rnn(out, H)
+        out = self.rnn(out, hidden)
         out = out[:, -1, :]  # Get the last time step's output
         out = self.fc(out)  # Fully connected output layer
         return out
 
-"""
-Use your trained word embedding and define a RNN architecture that can predict the next
-word given the context before the target.
-"""
-class GenerationRNN(nn.Module):
+
+class GenerativeRNN(nn.Module):
     def __init__(self, embedding, num_inputs, num_hiddens, num_layers, dropout=0):
         super().__init__()
 
@@ -104,9 +101,34 @@ class GenerationRNN(nn.Module):
         # Fully connected layer
         self.fc = nn.Linear(num_hiddens, vocab_size)  # Between recurrent and output
 
-        def forward(self, x, H=None):
-            out = self.embedding(x)
-            out = self.rnn(out, H)
-            out = out[:, -1, :]  # Get the last time step's output
-            out = self.fc(out)  # Fully connected output layer
-            return out
+    def forward(self, x, hidden=None):
+        out = self.embedding(x)
+        out = self.rnn(out, hidden)
+        out = out[:, -1, :]  # Get the last time step's output
+        out = self.fc(out)  # Fully connected output layer
+        return out
+
+
+class GenerativeLSTM(nn.Module):
+    def __init__(self, embedding, num_inputs, num_hiddens, num_layers, dropout=0):  # Use dropout if num_layers > 1
+        super().__init__()
+
+        # Embedding layer
+        (vocab_size, embedding_dim) = embedding.weight.shape
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        self.embedding.load_state_dict(embedding.state_dict())
+        for p in self.embedding.parameters():
+            p.requires_grad = False
+        
+        # LSTM layer(s)
+        self.lstm = nn.LSTM(num_inputs, num_hiddens, num_layers, dropout=dropout, batch_first=True)
+        
+        # Fully connected layer
+        self.fc = nn.Linear(num_hiddens, vocab_size)  # Between recurrent and output
+
+    def forward(self, x, hidden=None):
+        out = self.embedding(x)
+        out, hidden = self.lstm(out, hidden)
+        out = out[:, -1, :]  # Get the last time step's output
+        out = self.fc(out)  # Fully connected output layer
+        return out, hidden

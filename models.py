@@ -91,11 +91,10 @@ class GenerationRNN(nn.Module):
     def __init__(self, embedding, num_inputs, num_hiddens, num_layers, dropout=0):
         super().__init__()
 
-                # Embedding layer with pretrained weights
+        # Embedding layer
         (vocab_size, embedding_dim) = embedding.weight.shape
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
         self.embedding.load_state_dict(embedding.state_dict())
-        # Freeze the embedding layer to avoid weight updates during training
         for p in self.embedding.parameters():
             p.requires_grad = False
         
@@ -104,3 +103,10 @@ class GenerationRNN(nn.Module):
         
         # Fully connected layer
         self.fc = nn.Linear(num_hiddens, vocab_size)  # Between recurrent and output
+
+        def forward(self, x, H=None):
+            out = self.embedding(x)
+            out = self.rnn(out, H)
+            out = out[:, -1, :]  # Get the last time step's output
+            out = self.fc(out)  # Fully connected output layer
+            return out

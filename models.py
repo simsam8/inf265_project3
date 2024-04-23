@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -16,3 +17,50 @@ class CBOW(nn.Module):
         out = F.relu(self.fc1(out))
         out = F.log_softmax(self.fc2(out), dim=1)
         return out
+
+
+class SimpleMLP(nn.Module):
+    def __init__(self, embedding, context_size):
+        super().__init__()
+
+        (vocab_size, embedding_dim) = embedding.weight.shape
+        # Instantiate an embedding layer
+        self.embedding = nn.Embedding(vocab_size, embedding_dim)
+        # Load the pretrained weights
+        self.embedding.load_state_dict(embedding.state_dict())
+        # Freeze the layer
+        for p in self.embedding.parameters():
+            p.requires_grad = False
+
+        # Regular MLP
+        self.fc1 = nn.Linear(embedding_dim * context_size, 128)
+        self.fc2 = nn.Linear(128, 12)
+
+    def forward(self, x):
+        # x is of shape (N, context_size) but contains integers which can
+        # be seen as equivalent to (N, context_size, vocab_size) since one hot
+        # encoding is used under the hood
+        out = self.embedding(x)
+        # out is now of shape (N, context_size, embedding_dim)
+
+        out = F.relu(self.fc1(torch.flatten(out, 1)))
+        # out is now of shape (N, context_size*embedding_dim)
+
+        out = self.fc2(out)
+        return out
+
+
+class AttentionMLP(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def forward(self, x):
+        pass
+
+
+class ConjugationRNN(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def forward(self, x):
+        pass

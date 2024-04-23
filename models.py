@@ -59,7 +59,7 @@ class AttentionMLP(nn.Module):
 
 
 class ConjugationRNN(nn.Module):
-    def __init__(self, embedding, context_size, num_inputs, num_hiddens):
+    def __init__(self, embedding, num_inputs, num_hiddens):
         super().__init__()
 
         # Embedding layer with pretrained weights
@@ -76,10 +76,9 @@ class ConjugationRNN(nn.Module):
         # Fully connected layer
         self.fc = nn.Linear(num_hiddens, 12)  # Between recurrent and output. There are 12 possible conjugations
 
-        
     def forward(self, x, H=None):
         out = self.embedding(x)
         out = self.rnn(out, H)
         out = out[:, -1, :]  # Get the last time step's output
-        out = self.fc(out)  # Output layer
+        out = self.fc(out)  # Fully connected output layer
         return out

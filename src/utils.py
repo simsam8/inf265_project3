@@ -124,25 +124,29 @@ def beam_search(model: torch.nn.Module, init_tokens: list, beam_width: int=3, ma
     """
     A simple beam search implementation for text generation.
     :param model: A recurrent model that outputs a log probability distribution over the entire vocabulary
-    :param init_tokens: The context tokens before the target token(s) we want to generate, i.e. the start of the sentence.
+    :param init_tokens: The context tokens before the target token(s) we want to generate, i.e. the start of the sentence / prompt.
     :beam_width: The size of the beam (k). We select the beam_width number of tokens with the highest predicted (log) probabilities.
     :param max_len: The maximum length of the generated sequence/sentence.
     """
-    # Device configuration
+    # Store model to device for faster inference
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
-    model.eval()
+    model.eval()  # Freeze model weights for inference
     
-    # Gives intital tokens a candidate score of 0
+    # Gives intital sequence (prompt) a candidate score of 0
     sequences = [(init_tokens, 0.0)]
 
     # Main loop
     for i in range(max_len):
         candidates = []  # Keeps track of candidate tokens
         for seq, seq_score in sequences:
+            # Gets the first token
             input_token = torch.LongTensor(seq[-1])
-            with torch.no_grad():
+            # Runs inference
+            with torch.no_grad():  # Avoid calculating gradients
+                # TODO: Preprocessing step for input token
                 out, _ = model(input_token)
+            # Gets the token score
             softmax_scores = torch.log_softmax(out.squeeze(0), dim=0)
             top_k = torch.topk(softmax_scores, beam_width)
 

@@ -22,7 +22,7 @@ class CBOW(nn.Module):
 
 
 class SimpleMLP(nn.Module):
-    def __init__(self, embedding, max_len, **kwargs):
+    def __init__(self, embedding, max_len, l1=128, l2=32, **kwargs):
         super().__init__()
 
         (vocab_size, embedding_dim) = embedding.weight.shape
@@ -35,8 +35,9 @@ class SimpleMLP(nn.Module):
             p.requires_grad = False
 
         # Regular MLP
-        self.fc1 = nn.Linear(embedding_dim * max_len, 128)
-        self.fc2 = nn.Linear(128, 12)
+        self.fc1 = nn.Linear(embedding_dim * max_len, l1)
+        self.fc2 = nn.Linear(l1, l2)
+        self.fc3 = nn.Linear(l2, 12)
 
     def forward(self, x):
         # x is of shape (N, context_size) but contains integers which can
@@ -47,8 +48,9 @@ class SimpleMLP(nn.Module):
 
         out = F.relu(self.fc1(torch.flatten(out, 1)))
         # out is now of shape (N, context_size*embedding_dim)
+        out = F.relu(self.fc2(out))
 
-        out = self.fc2(out)
+        out = self.fc3(out)
         return out
 
 

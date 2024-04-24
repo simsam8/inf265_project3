@@ -68,7 +68,7 @@ class AttentionMLP(nn.Module):
 
         self.positional_encoding = PositionalEncoding(max_len, embedding_dim)
         self.multi_head = MultiHeadLayer(n_heads, embedding_dim, w_size)
-        self.fc1 = nn.Linear(max_len*embedding_dim, 12)
+        self.fc1 = nn.Linear(max_len * embedding_dim, 12)
 
     def forward(self, x):
         out = self.embedding(x)
@@ -167,12 +167,16 @@ class ConjugationRNN(nn.Module):
         # Freeze the embedding layer to avoid weight updates during training
         for p in self.embedding.parameters():
             p.requires_grad = False
-        
+
         # Recurrent layer(s)
-        self.rnn = nn.RNN(num_inputs, num_hiddens, num_layers, dropout=dropout, batch_first=True)
-        
+        self.rnn = nn.RNN(
+            num_inputs, num_hiddens, num_layers, dropout=dropout, batch_first=True
+        )
+
         # Fully connected layer
-        self.fc = nn.Linear(num_hiddens, 12)  # Between recurrent and output. There are 12 possible conjugations
+        self.fc = nn.Linear(
+            num_hiddens, 12
+        )  # Between recurrent and output. There are 12 possible conjugations
 
     def forward(self, x, hidden=None):
         out = self.embedding(x)
@@ -192,10 +196,12 @@ class GenerativeRNN(nn.Module):
         self.embedding.load_state_dict(embedding.state_dict())
         for p in self.embedding.parameters():
             p.requires_grad = False
-        
+
         # Recurrent layer(s)
-        self.rnn = nn.RNN(num_inputs, num_hiddens, num_layers, dropout=dropout, batch_first=True)
-        
+        self.rnn = nn.RNN(
+            num_inputs, num_hiddens, num_layers, dropout=dropout, batch_first=True
+        )
+
         # Fully connected layer
         self.fc = nn.Linear(num_hiddens, vocab_size)  # Between recurrent and output
 
@@ -208,7 +214,9 @@ class GenerativeRNN(nn.Module):
 
 
 class GenerativeLSTM(nn.Module):
-    def __init__(self, embedding, num_inputs, num_hiddens, num_layers, dropout=0):  # Use dropout if num_layers > 1
+    def __init__(
+        self, embedding, num_inputs, num_hiddens, num_layers, dropout=0
+    ):  # Use dropout if num_layers > 1
         super().__init__()
 
         # Embedding layer
@@ -217,10 +225,12 @@ class GenerativeLSTM(nn.Module):
         self.embedding.load_state_dict(embedding.state_dict())
         for p in self.embedding.parameters():
             p.requires_grad = False
-        
+
         # LSTM layer(s)
-        self.lstm = nn.LSTM(num_inputs, num_hiddens, num_layers, dropout=dropout, batch_first=True)
-        
+        self.lstm = nn.LSTM(
+            num_inputs, num_hiddens, num_layers, dropout=dropout, batch_first=True
+        )
+
         # Fully connected layer
         self.fc = nn.Linear(num_hiddens, vocab_size)  # Between recurrent and output
 

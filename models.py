@@ -207,10 +207,10 @@ class GenerativeRNN(nn.Module):
 
     def forward(self, x, hidden=None):
         out = self.embedding(x)
-        out = self.rnn(out, hidden)
+        out, hidden = self.rnn(out, hidden)
         out = out[:, -1, :]  # Get the last time step's output
         out = self.fc(out)  # Fully connected output layer
-        return out
+        return out, hidden
 
 
 class GenerativeLSTM(nn.Module):

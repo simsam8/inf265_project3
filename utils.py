@@ -3,7 +3,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from datetime import datetime
 import matplotlib.pyplot as plt
-
+from models import GenerativeLSTM, GenerativeRNN
 
 def set_device(device=None):
     """
@@ -118,3 +118,47 @@ def plot_performance_over_time(
     plt.xlabel("Epochs")
 
     plt.show()
+
+
+def beam_search(model: torch.nn.Module, init_tokens: list, beam_width: int=3, max_len: int=5) -> torch.Tensor:
+    """
+    A simple beam search implementation for text generation.
+    :param model: A recurrent model that outputs a log probability distribution over the entire vocabulary
+    :param init_tokens: The context tokens before the target token(s) we want to generate, i.e. the start of the sentence.
+    :beam_width: The size of the beam (k). We select the beam_width number of tokens with the highest predicted (log) probabilities.
+    :param max_len: The maximum length of the generated sequence/sentence.
+    """
+    
+    # Prepares initial tokens for input to the model
+    torch.LongTensor(init_tokens).unsqueeze(0)  # Convert to tensor, add batch to input dimensions
+
+    # if isinstance(model, GenerativeLSTM):
+    # Initial hidden state
+    hidden = None
+
+    # Gets the hidden state for the intial tokens
+    with torch.no_grad():
+        for token in init_tokens[0]:
+            _, hidden = model(torch.LongTensor([token]).unsqueeze(0), hidden)
+    
+    # Gives intital tokens a candidate score of 0
+    sequences = [(init_tokens, 0.0)]
+
+    # Main loop
+    for i in range(max_len):
+        candidates = []  # Keeps track of candidate tokens
+        for seq, seq_score in sequences:
+            input_token = torch.LongTensor(seq[-1])
+            with torch.no_grad():
+                out, hidden = model(input_token, hidden)
+            softmax_scores = torch.log_softmax(out.squeeze(0), dim=0)
+            top_k = torch.topk(softmax_scores, beam_width)
+
+            for i in range(beam_width):
+                token, token_score = top_k[i][0].item(), top_k[i][1].item()
+                candidate = seq.extend(token)
+                cand_score = token_score + seq_score
+                candidates.append((candidate, cand_score))
+    
+    # TESTING ONLY
+    return candidates

@@ -5,6 +5,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from .models import GenerativeLSTM, GenerativeRNN
 
+
 def set_device(device=None):
     """
     Helper function to set device
@@ -120,7 +121,9 @@ def plot_performance_over_time(
     plt.show()
 
 
-def beam_search(model: torch.nn.Module, init_tokens: list, beam_width: int=3, max_len: int=5) -> torch.Tensor:
+def beam_search(
+    model: nn.Module, init_tokens: list, beam_width: int = 3, max_len: int = 5
+) -> torch.Tensor:
     """
     A simple beam search implementation for text generation.
     :param model: A recurrent model that outputs a log probability distribution over the entire vocabulary
@@ -132,7 +135,7 @@ def beam_search(model: torch.nn.Module, init_tokens: list, beam_width: int=3, ma
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()  # Freeze model weights for inference
-    
+
     # Gives intital sequence (prompt) a candidate score of 0
     sequences = [(init_tokens, 0.0)]
 
@@ -157,6 +160,6 @@ def beam_search(model: torch.nn.Module, init_tokens: list, beam_width: int=3, ma
 
         # Pruning
         ordered = sorted(candidates, key=lambda c: c[1], reverse=True)
-        sequences = ordered[:beam_width]                
-    
+        sequences = ordered[:beam_width]
+
     return sequences

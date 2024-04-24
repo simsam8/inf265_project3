@@ -128,18 +128,10 @@ def beam_search(model: torch.nn.Module, init_tokens: list, beam_width: int=3, ma
     :beam_width: The size of the beam (k). We select the beam_width number of tokens with the highest predicted (log) probabilities.
     :param max_len: The maximum length of the generated sequence/sentence.
     """
-    
-    # Prepares initial tokens for input to the model
-    torch.LongTensor(init_tokens).unsqueeze(0)  # Convert to tensor, add batch to input dimensions
-
-    # if isinstance(model, GenerativeLSTM):
-    # Initial hidden state
-    hidden = None
-
-    # Gets the hidden state for the intial tokens
-    with torch.no_grad():
-        for token in init_tokens[0]:
-            _, hidden = model(torch.LongTensor([token]).unsqueeze(0), hidden)
+    # Device configuration
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    model.eval()
     
     # Gives intital tokens a candidate score of 0
     sequences = [(init_tokens, 0.0)]
@@ -150,15 +142,17 @@ def beam_search(model: torch.nn.Module, init_tokens: list, beam_width: int=3, ma
         for seq, seq_score in sequences:
             input_token = torch.LongTensor(seq[-1])
             with torch.no_grad():
-                out, hidden = model(input_token, hidden)
+                out, _ = model(input_token)
             softmax_scores = torch.log_softmax(out.squeeze(0), dim=0)
             top_k = torch.topk(softmax_scores, beam_width)
 
             for i in range(beam_width):
                 token, token_score = top_k[i][0].item(), top_k[i][1].item()
-                candidate = seq.extend(token)
-                cand_score = token_score + seq_score
-                candidates.append((candidate, cand_score))
+                candidate = (seq.extend(token), token_score + seq_score)
+                candidates.append(candidate)
+
+        # Pruning
+        ordered = sorted(candidates, key=lambda c: c[1], reverse=True)
+        sequences = ordered[:beam_width]                
     
-    # TESTING ONLY
-    return candidates
+    return sequences

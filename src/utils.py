@@ -90,7 +90,7 @@ def train(epochs, model, optimizer, loss_fn, train_loader, val_loader, device=No
             val_acc = compute_accuracy(model, val_loader, device)
             val_accuracies.append(val_acc)
 
-        if epoch == 1 or epoch % 1 == 0:
+        if epoch == 1 or epoch % 10 == 0:
             log = (
                 f"{datetime.now().time()}, Epoch: {epoch}, "
                 + f"train_loss: {train_loss/n_batch_train:.3f}, train_accuracy: {train_acc*100:.3f}%, "
@@ -105,6 +105,8 @@ def plot_performance_over_time(
     val_perf: list[float],
     title: str,
     y_label: str,
+    f_name=None,
+    save=False,
 ) -> None:
     """
     Creates a plot of training and validation loss/performance over time.
@@ -114,10 +116,21 @@ def plot_performance_over_time(
     ax.plot(train_perf, label="train")
     ax.plot(val_perf, label="val")
     ax.legend()
-
     plt.ylabel(y_label)
     plt.xlabel("Epochs")
+    if save:
+        plt.savefig(f_name)
+    plt.show()
 
+
+def plot_training_times(architecture_times, labels, f_name=None, save=False):
+    fig, ax = plt.subplots()
+    ax.set_title("Average training time of different architectures")
+    ax.bar(labels, architecture_times)
+    plt.ylabel("Time (seconds)")
+    plt.xlabel("Architecture")
+    if save:
+        plt.savefig(f_name)
     plt.show()
 
 

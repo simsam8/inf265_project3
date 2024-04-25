@@ -37,6 +37,10 @@ Explain training procedure
 -- TODO --
 Report on test performance, cosine similarity, embedding Visualization, and embedding arithmetic.
 
+![Training and validation loss of selected CBOW model](images/embedding_loss.png)
+
+![Training and validation accuracy of selected CBOW model](images/embedding_accuracy.png)
+
 ### Test performance
 
 ### Cosine similarity
@@ -60,6 +64,12 @@ Explain training, and parameter search
 
 -- TODO -- 
 Report on performance and training/performance time of models
+
+![Training and validation loss of selected model](images/conjugation_loss.png)
+
+![Training and validation accuracy of selected model](images/conjugation_loss.png)
+
+![Average training times for architectures](images/conjugation_training_times.png)
 
 # Text generation
 

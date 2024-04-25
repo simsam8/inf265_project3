@@ -69,6 +69,9 @@ Report on performance and training/performance time of models
 
 ![Training and validation accuracy of selected model](images/conjugation_loss.png)
 
+Time is taken on the whole training function,
+which includes computing loss and accuracy for both training and validation.
+
 ![Average training times for architectures](images/conjugation_training_times.png)
 
 # Text generation

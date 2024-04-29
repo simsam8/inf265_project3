@@ -1,6 +1,7 @@
 #
 data/
-generated/
+generated_data/data_*.pt
+generated_data/words_*.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

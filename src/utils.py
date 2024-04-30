@@ -134,8 +134,12 @@ def plot_training_times(architecture_times, labels, f_name=None, save=False):
 
 
 def beam_search(
-    model: nn.Module, init_token_indeces: list, beam_width: int = 3, max_len: int = 5, 
-    gen_sequences: int=1, print_search_tree: bool=False
+    model: nn.Module,
+    init_token_indeces: list,
+    beam_width: int = 3,
+    max_len: int = 5,
+    gen_sequences: int = 1,
+    print_search_tree: bool = False,
 ) -> torch.Tensor:
     """
     A simple beam search implementation for text generation.
@@ -143,9 +147,9 @@ def beam_search(
     :param init_token_indeces: A list of the context tokens' indeces before the target token(s) we want to generate, i.e. the start of the sentence / prompt.
     :beam_width: The size of the beam (k). We select the beam_width number of tokens with the highest predicted (log) probabilities.
     :param max_len: The maximum length of the generated sequence/sentence.
-    :param gen_sequences: The number of generated sequences to return. Returns top gen_sequences candidates from search tree. 
+    :param gen_sequences: The number of generated sequences to return. Returns top gen_sequences candidates from search tree.
     :param print_search_tree: Whether to print all candidates during the search (for debugging/reporting purposes)
-    :return: A list of (sequence, sequence score) tuples. 
+    :return: A list of (sequence, sequence score) tuples.
     """
     # Store model to device for faster inference
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -173,14 +177,19 @@ def beam_search(
 
             # Keeps track of candidates
             for i in range(beam_width):
-                token_index, token_score = top_k.indices[0][i].item(), top_k.values[0][i].item()
+                token_index, token_score = (
+                    top_k.indices[0][i].item(),
+                    top_k.values[0][i].item(),
+                )
                 candidate = (seq + [token_index], token_score + seq_score)
                 candidates.append(candidate)
                 if print_search_tree:
-                    print(f"{[mapping[token_index] for token_index in candidate[0]]} Score: {candidate[1]}")
+                    print(
+                        f"{[mapping[token_index] for token_index in candidate[0]]} Score: {candidate[1]}"
+                    )
 
         # Pruning
         ordered = sorted(candidates, key=lambda c: c[1], reverse=True)
         sequences = ordered[:beam_width]
 
-    return sequences[gen_sequences-1]
+    return sequences[gen_sequences - 1]

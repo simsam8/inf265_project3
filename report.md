@@ -45,6 +45,8 @@ Report on test performance, cosine similarity, embedding Visualization, and embe
 
 ### Cosine similarity
 
+![Cosine similarity matrix](images/similarity_matrix.png)
+
 ### Visualization of embedding space
 
 # Conjugation of _have_ and _be_
@@ -81,6 +83,10 @@ which includes computing loss and accuracy for both training and validation.
 ## Training
 
 ## Results
+
+![Training and validation loss of selected text generation model](images/text_generation_loss.png)
+
+![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png)
 
 ### Examples of generated sequences
 

@@ -3,7 +3,6 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from datetime import datetime
 import matplotlib.pyplot as plt
-from .models import GenerativeLSTM, GenerativeRNN
 
 
 def set_device(device=None):

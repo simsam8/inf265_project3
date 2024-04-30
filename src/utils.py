@@ -1,4 +1,5 @@
 import torch
+import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from datetime import datetime
@@ -18,7 +19,9 @@ def set_device(device=None):
 
 
 def compute_accuracy(model: nn.Module, loader: DataLoader, device=None):
-
+    """
+    Computes the accuracy of a model on a given dataset.
+    """
     correct, total = 0, 0
 
     model.eval()
@@ -39,7 +42,19 @@ def compute_accuracy(model: nn.Module, loader: DataLoader, device=None):
     return acc
 
 
-def train(epochs, model, optimizer, loss_fn, train_loader, val_loader, device=None):
+def train(
+    epochs: int,
+    model: nn.Module,
+    optimizer: optim.Optimizer,
+    loss_fn,
+    train_loader: DataLoader,
+    val_loader: DataLoader,
+    device=None,
+) -> tuple[list, list, list, list]:
+    """
+    Trains a model with given optimizer and loss function.
+    Tracks training and validation loss and accuracy.
+    """
     n_batch_train = len(train_loader)
     train_losses = []
     train_accuracies = []
@@ -110,7 +125,7 @@ def plot_performance_over_time(
     """
     Creates a plot of training and validation loss/performance over time.
     """
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     ax.set_title(title)
     ax.plot(train_perf, label="train")
     ax.plot(val_perf, label="val")
@@ -122,8 +137,11 @@ def plot_performance_over_time(
     plt.show()
 
 
-def plot_training_times(architecture_times, labels, f_name=None, save=False):
-    fig, ax = plt.subplots()
+def plot_training_times(architecture_times, labels, f_name=None, save=False) -> None:
+    """
+    Creates a plot of average architecture training times.
+    """
+    _, ax = plt.subplots()
     ax.set_title("Average training time of different architectures")
     ax.bar(labels, architecture_times)
     plt.ylabel("Time (seconds)")

@@ -135,14 +135,18 @@ def plot_training_times(architecture_times, labels, f_name=None, save=False):
 
 
 def beam_search(
-    model: nn.Module, init_tokens: list, beam_width: int = 3, max_len: int = 5
+    model: nn.Module, init_token_indeces: list, beam_width: int = 3, max_len: int = 5, 
+    gen_sequences: int=1, print_search_tree: bool=False
 ) -> torch.Tensor:
     """
     A simple beam search implementation for text generation.
     :param model: A recurrent model that outputs a log probability distribution over the entire vocabulary
-    :param init_tokens: The context tokens before the target token(s) we want to generate, i.e. the start of the sentence / prompt.
+    :param init_token_indeces: A list of the context tokens' indeces before the target token(s) we want to generate, i.e. the start of the sentence / prompt.
     :beam_width: The size of the beam (k). We select the beam_width number of tokens with the highest predicted (log) probabilities.
     :param max_len: The maximum length of the generated sequence/sentence.
+    :param gen_sequences: The number of generated sequences to return. Returns top gen_sequences candidates from search tree. 
+    :param print_search_tree: Whether to print all candidates during the search (for debugging/reporting purposes)
+    :return: A list of (sequence, sequence score) tuples. 
     """
     # Store model to device for faster inference
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -150,29 +154,34 @@ def beam_search(
     model.eval()  # Freeze model weights for inference
 
     # Gives intital sequence (prompt) a candidate score of 0
-    sequences = [(init_tokens, 0.0)]
+    sequences = [(init_token_indeces, 0.0)]
+    mapping = torch.load("../generated_data/mapping.pt")
 
-    # Main loop
+    # Search loop
     for i in range(max_len):
+        if print_search_tree:
+            print(f"----- Sequences of length {len(init_token_indeces) + i} ------")
         candidates = []  # Keeps track of candidate tokens
         for seq, seq_score in sequences:
-            # Gets the first token
-            input_token = torch.LongTensor(seq[-1])
+            # Converts to Tensor with batch dimension
+            input_seq = torch.LongTensor(seq).unsqueeze(0).to(device)
             # Runs inference
             with torch.no_grad():  # Avoid calculating gradients
-                # TODO: Preprocessing step for input token
-                out, _ = model(input_token)
-            # Gets the token score
-            softmax_scores = torch.log_softmax(out.squeeze(0), dim=0)
-            top_k = torch.topk(softmax_scores, beam_width)
+                log_probs = model(input_seq)
 
+            # Gets the index of the top k candidates
+            top_k = torch.topk(log_probs, beam_width)
+
+            # Keeps track of candidates
             for i in range(beam_width):
-                token, token_score = top_k[i][0].item(), top_k[i][1].item()
-                candidate = (seq.extend(token), token_score + seq_score)
+                token_index, token_score = top_k.indices[0][i].item(), top_k.values[0][i].item()
+                candidate = (seq + [token_index], token_score + seq_score)
                 candidates.append(candidate)
+                if print_search_tree:
+                    print(f"{[mapping[token_index] for token_index in candidate[0]]} Score: {candidate[1]}")
 
         # Pruning
         ordered = sorted(candidates, key=lambda c: c[1], reverse=True)
         sequences = ordered[:beam_width]
 
-    return sequences
+    return sequences[gen_sequences-1]

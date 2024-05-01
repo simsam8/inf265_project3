@@ -55,9 +55,35 @@ Relu is used as the activation function, and the last layer is passed through a 
 
 ## Training and Selection
 #### Training data
-In addition to the 13 books provided on MittUiB, we downloaded these XX books from The Gutenberg Project:
-| | | |
+In addition to the 13 books provided on MittUiB, we downloaded these 23 books from The Gutenberg Project:
+| Title               | Author          |
+| ------------------- | ---------------  |
+| Romeo and Juliet | William Shakespeare |
+| The Tragedy of King Lear | Wi |lliam Shakespeare |
+| Othello | William Shakespeare |
+| Macbeth | William Shakespeare |
+| Hamlet | William Shakespeare |
+| The Time Machine | H. G. Wells |
+| The Last Question | Isaac Asimov |
+| Notes from the Underground | Fyodor Dostoyevsky |
+| War of the Worlds | H. G. Wells |
+| Alice’s Adventures in Wonderland | Lewis Carroll |
+| Frankenstein | Mary Wollstonecraft Shelley |
+| Moby Dick | Herman Melville |
+| The Importance of Being Earnest: A Trivial Comedy for Serious People | Oscar Wilde |
+| The Great Gatsby | F. Scott Fitzgerald |
+| The Picture of Dorian Gray | Oscar Wilde |
+| Metamorphosis | Franz Kafka |
+| A Tale of Two Cities | Charles Dickens |
+| Jane Eyre: An Autobiography | Charlotte Brontë |
+| Treasure Island | Robert Louis Stevenson |
+| The Hound of the Baskervilles | Arthur Conan Doyle |
+| Gulliver's Travels into Several Remote Nations of the World | Jonathan Swift |
+| Paradise Lost | John Milton |
+| A Doll's House : a play | Henrik Ibsen |
 
+
+Author: Henrik Ibsen
 
 -- TODO --
 Explain training procedure

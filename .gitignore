@@ -1,5 +1,4 @@
 #
-data/
 generated_data/data_*.pt
 generated_data/words_*.pt
 generated_data/text_generation_data.pt

@@ -24,9 +24,9 @@ Only words that appear 100 times or more are used in our vocabulary.
 
 ### Dataset
 
-The training dataset contains --INSERT-- words, and has --INSERT-- 
-distinct words.
-The defined vocabulary contains --INSERT-- words. 
+The training dataset contains 2,684,706 words, and has 52,105 distinct words.
+The defined vocabulary contains 1880 words. 
+Many words then becomes unkown words, and could affect performance.
 
 When creating the context, target pairs, we have used a context size of 6.
 The context size refers to the number of tokens before and after the target.
@@ -52,7 +52,14 @@ The weights for the vocabulary are passed to the loss function.
 
 The function `src/train` is used for training in all three tasks.
 
---INSERT-- hyper parameters
+We used a batch size of 64, and trained 15 epochs for every run.
+
+| Learning rate | Embedding dimension |
+| -------------- | --------------- |
+| 0.001 | 16 |
+| 0.001 | 20 |
+| 0.008 | 16 |
+| 0.008 | 20 |
 
 We have implemented a simple grid search, where;
 for each architectures, we train it for every defined hyperparameter combination.
@@ -127,8 +134,43 @@ We use the same approach for a simple grid search as in the previous task.
 For each model architecture we train with all possible hyper parameter combinations.
 Additionally we measure the average training time for each model architecture.
 
+We used a batch size of 64, and trained 30 epochs for every run.
 
---INSERT-- hyper parameters
+--INSERT-- hyper parameters 
+
+SimpleMLP:
+
+| l1 | l2 |
+| -------------- | --------------- |
+| 128 | 32 |
+| 256 | 64 |
+| 256 | 256 |
+
+
+AttentionMLP:
+
+| n_heads | W size |
+| -------------- | --------------- |
+| 4 | 8 |
+| 8 | 16 |
+| 16 | 20 |
+
+
+ConjugationRNN:
+
+| num_hidden | num_layers | dropout |
+| --------------- | --------------- | --------------- |
+| 8 | 4 | 0 |
+| 16 | 8 | 0.1 |
+| 20 | 16 | 0.1|
+
+
+| Learning rate |
+| ------------- |
+| 0.008 |
+| 0.001 |
+| 0.0005 |
+
 
 The model with the highest accuracy is chosen.
 
@@ -174,8 +216,21 @@ loss function.
 We use the same approach for a simple grid search as in the previous tasks.
 For each model architecture we train with all possible hyper parameter combinations.
 
+We used a batch size of 64, and trained 20 epochs for every run.
 
---INSERT-- hyper parameters
+
+| num_hidden | num_layers | dropout |
+| --------------- | --------------- | --------------- |
+| 8 | 4 | 0 |
+| 16 | 8 | 0.1 |
+| 20 | 16 | 0.1|
+
+| Learning rate |
+| ------------- |
+| 0.008 |
+| 0.001 |
+| 0.01 |
+| 0.0005 |
 
 The model with the highest accuracy is chosen.
 

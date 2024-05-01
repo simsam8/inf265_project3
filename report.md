@@ -35,11 +35,11 @@ Only words that appear 100 times or more are used in our vocabulary.
 
 ### Dataset
 
-The training dataset contains 2,684,706 words, and has 52,105 distinct words.
-The defined vocabulary contains 1880 words. 
+The training dataset contains --INSERT-- words, and has --INSERT-- distinct words.
+The defined vocabulary contains --INSERT-- words. 
 Many words then becomes unkown words, and could affect performance.
 
-When creating the context, target pairs, we have used a context size of 6.
+When creating the context, target pairs, we have used a context size of 12.
 The context size refers to the number of tokens before and after the target.
 The total context then 2*context_size.
 Unkown tokens (<unk>), and punctuations are excluded from the targets.
@@ -237,6 +237,7 @@ which includes computing loss and accuracy for both training and validation.
 
 Generated from tokenized words.
 Context is now before the target.
+We used a context size of 30.
 
 ### Model architectures
 

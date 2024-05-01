@@ -10,6 +10,17 @@ header-includes: |
 ---
 
 # Introduction
+This report aims to explain our approach and design choices for defining, training and evaluating sequence models for the tasks of  and object detection. Additionally, we will discuss the performance of our models and evaluate our implementations.
+
+For general information and setup guidance, please refer to the [README](README.md).
+
+### Contributions
+There is some overlap, but here is a general overview of what each project member contributed with: 
+
+- **Simon Vedaa**: Model architecture, loss functions, preprocessing, model training and selection, plotting, documentation and project report
+- **Sebastion Røkholt**: Performance metrics, training loop, documentation and project report
+
+\newpage
 
 # Embedding
 
@@ -43,6 +54,10 @@ Relu is used as the activation function, and the last layer is passed through a 
 
 
 ## Training and Selection
+#### Training data
+In addition to the 13 books provided on MittUiB, we downloaded these XX books from The Gutenberg Project:
+| | | |
+
 
 -- TODO --
 Explain training procedure

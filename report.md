@@ -8,21 +8,20 @@ header-includes: |
     \usepackage{caption}
     \usepackage{subcaption}
 ---
-
 # Introduction
-This report aims to explain our approach and design choices for defining, training and evaluating sequence models for the tasks of  and object detection. Additionally, we will discuss the performance of our models and evaluate our implementations.     
+This report aims to explain our approach and design choices for defining, training and evaluating sequence models for three language modelling tasks. Additionally, we will discuss the performance of our models and evaluate our implementations.
 
 For general information and setup guidance, please refer to the [README](README.md).
 
-### Contributions
+## Contributions
 There is some overlap, but here is a general overview of what each project member contributed with: 
 
-- **Simon Vedaa**: Model architecture, loss functions, preprocessing, model training and selection, plotting, documentation and project report
-- **Sebastion Røkholt**: Performance metrics, training loop, documentation and project report
+- **Simon Vedaa**: Word embedding and conjugation modelling, loss functions, preprocessing, model training, evaluation and selection, plotting, documentation and project report
+- **Sebastion Røkholt**: Generation modelling, beam search, model evaluation, code documentation and report
 
 \newpage
 
-# Embedding
+# Task 1: Word embeddings
 
 ## Approach and design choices
 
@@ -54,12 +53,13 @@ Relu is used as the activation function, and the last layer is passed through a 
 
 
 ## Training and Selection
-#### Training data
+### Training data
 In addition to the 13 books provided on MittUiB, we downloaded these 23 books from The Gutenberg Project:
+
 | Title               | Author          |
 | ------------------- | ---------------  |
 | Romeo and Juliet | William Shakespeare |
-| The Tragedy of King Lear | Wi |lliam Shakespeare |
+| The Tragedy of King Lear | William Shakespeare |
 | Othello | William Shakespeare |
 | Macbeth | William Shakespeare |
 | Hamlet | William Shakespeare |
@@ -70,7 +70,7 @@ In addition to the 13 books provided on MittUiB, we downloaded these 23 books fr
 | Alice’s Adventures in Wonderland | Lewis Carroll |
 | Frankenstein | Mary Wollstonecraft Shelley |
 | Moby Dick | Herman Melville |
-| The Importance of Being Earnest: A Trivial Comedy for Serious People | Oscar Wilde |
+| The Importance of Being Earnest | Oscar Wilde |
 | The Great Gatsby | F. Scott Fitzgerald |
 | The Picture of Dorian Gray | Oscar Wilde |
 | Metamorphosis | Franz Kafka |
@@ -78,7 +78,7 @@ In addition to the 13 books provided on MittUiB, we downloaded these 23 books fr
 | Jane Eyre: An Autobiography | Charlotte Brontë |
 | Treasure Island | Robert Louis Stevenson |
 | The Hound of the Baskervilles | Arthur Conan Doyle |
-| Gulliver's Travels into Several Remote Nations of the World | Jonathan Swift |
+| Gulliver's Travels | Jonathan Swift |
 | Paradise Lost | John Milton |
 | A Doll's House : a play | Henrik Ibsen |
 
@@ -128,7 +128,7 @@ The chosen model got a test accuracy of --INSERT--
 
 --INSERT-- plots from tensorflow projector
 
-# Conjugation of _have_ and _be_
+# Task 2: Conjugation of _have_ and _be_
 
 ## Approach and design choices
 
@@ -145,7 +145,7 @@ We have defined three architectures for the conjugation task, `SimpleMLP`, `Atte
 Each model has an embedding layer as its first layer, which is frozen during initalization.
 Additionally each architecture includes a parameter for the max length of the input sequence.
 
-The `SimplMLP` contains three fully connected layers after the embedding layer.
+The `SimpleMLP` contains three fully connected layers after the embedding layer.
 The first linear layer takes an input of size `embedding_dim*max_len`.
 The last layer has an output size of 12, corresponding to the number of possible conjugations.
 All sizes of the layers in between are adjustable.
@@ -229,32 +229,32 @@ which includes computing loss and accuracy for both training and validation.
 
 ![Average training times for architectures](images/conjugation_training_times.png)
 
-# Text generation
+# Task 3: Text generation
 
 ## Approach and design choices
 
 ### Dataset
+For the task of text generation, we generated a new dataset of context-target pairs where the context only consist of `context_size` number of tokens *before* the target. The code for creating this dataset is located in the `create_dataset` function in the [generation.ipynb](https://github.com/simsam8/inf265_project3/blob/main/notebooks/generation.ipynb) notebook, which takes a tokenized dataset as input. 
 
-Generated from tokenized words.
-Context is now before the target.
+-- TODO --
+
+| Generation dataset type | Size |
+| ------------- | ------------------ |
+| Training data | <INSERT SIZE HERE> | 
+| Validation data | <INSERT SIZE HERE> | 
+| Test data | <INSERT SIZE HERE> | 
 
 ### Model architectures
 
 -- TODO --
-Write about text generation architectures
+We decided that we wanted to compare RNN and LSTM-based architectures, because we were curious to see whether the LSTMs would outperform the "basic" RNNs for this task. Both architecture variants were similar, as they consisted of our previously trained embedding layer (with frozen weights) of size `vocab_size`\*`embedding_dim`, one or multiple recurrent (RNN/LSTM) layers, and a fully connected output layer of size `num_hiddens`\*`vocab_size`. 
 
-## Training
+The hyperparameters were the same as for task 2; the number of hidden recurrent layers, the number of hidden units and a dropout parameter.
+
+## Model training
 
 -- TODO -- 
-Explain training, and parameter search
-
-Here we are using `Adam` for the optimizer as well. `nn.CrossEntropyLoss` is used as the 
-loss function.
-
-We use the same approach for a simple grid search as in the previous tasks.
-For each model architecture we train with all possible hyper parameter combinations.
-
-We used a batch size of 64, and trained 20 epochs for every run.
+The training loop for the text generation models is identical to the one we used to train the conjugation models. As before, we are using `Adam` for the optimizer and `nn.CrossEntropyLoss` for the loss function with a batch size of 64. We trained 20 epochs for every run and ranked them on their target token prediction accuracy.
 
 
 | num_hidden | num_layers | dropout |
@@ -270,21 +270,18 @@ We used a batch size of 64, and trained 20 epochs for every run.
 | 0.01 |
 | 0.0005 |
 
-The model with the highest accuracy is chosen.
+## Model selection
+--TODO--
+The grid search gave the following results: 
 
-## Results
+--INSERT TABLE HERE --
 
-These were the chosen parameters and architecture --INSERT--
-
--- TODO -- 
-Report on performance
-
+<model_name> with <hyperparameters> achieved the highest accuracy. When looking at the training and validation loss, we see that the model ...
 ![Training and validation loss of selected text generation model](images/text_generation_loss.png)
 
 ![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png)
 
 ### Examples of generated sequences
 
--- TODO --
 Include some example input and output sequences
 

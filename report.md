@@ -30,7 +30,7 @@ There is some overlap, but here is a general overview of what each project membe
 
 For tokenization we are using the basic-english tokenizer from `torchtext`.
 We exclude tokens which are digits, names, and spaces.
-Only words that appear 100 times or more are used in our vocabulary.
+Only words that appear 90 times or more are used in our vocabulary.
 
 
 ### Dataset
@@ -41,12 +41,12 @@ Many words then becomes unkown words, and could affect performance.
 
 When creating the context, target pairs, we have used a context size of 12.
 The context size refers to the number of tokens before and after the target.
-The total context then 2*context_size.
-Unkown tokens (<unk>), and punctuations are excluded from the targets.
+The total context then becomes 2*context_size.
+Unkown tokens (`<unk>`), and punctuations are excluded from the targets.
 
 ### CBOW Architecture
 
-We have defined two CWOB architectures, `CBOW` and `CBOWDeep`. Both take the vocab size, context size, and 
+We have defined two CBOW architectures, `CBOW` and `CBOWDeep`. Both take the vocab size, context size, and 
 embedding dimension as parameters. The first layer is a `nn.Embedding` for both.
 
 `CBOW` contains two fully connected layers after the embedding layer, while, `CBOWDeep` contains four.
@@ -56,6 +56,7 @@ Relu is used as the activation function, and the last layer is passed through a 
 ## Training and Selection
 #### Training data
 In addition to the 13 books provided on MittUiB, we downloaded these 23 books from The Gutenberg Project:
+
 | Title               | Author          |
 | ------------------- | ---------------  |
 | Romeo and Juliet | William Shakespeare |

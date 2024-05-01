@@ -10,7 +10,7 @@ header-includes: |
 ---
 
 # Introduction
-This report aims to explain our approach and design choices for defining, training and evaluating sequence models for the tasks of  and object detection. Additionally, we will discuss the performance of our models and evaluate our implementations.
+This report aims to explain our approach and design choices for defining, training and evaluating sequence models for the tasks of  and object detection. Additionally, we will discuss the performance of our models and evaluate our implementations.     
 
 For general information and setup guidance, please refer to the [README](README.md).
 
@@ -81,9 +81,6 @@ In addition to the 13 books provided on MittUiB, we downloaded these 23 books fr
 | Gulliver's Travels into Several Remote Nations of the World | Jonathan Swift |
 | Paradise Lost | John Milton |
 | A Doll's House : a play | Henrik Ibsen |
-
-
-Author: Henrik Ibsen
 
 -- TODO --
 Explain training procedure

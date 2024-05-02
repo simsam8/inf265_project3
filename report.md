@@ -34,9 +34,10 @@ Only words that appear 90 times or more are used in our vocabulary.
 
 ### Dataset
 
-The training dataset contains --INSERT-- words, and has --INSERT-- distinct words.
-The defined vocabulary contains --INSERT-- words. 
+The training dataset contains 4,384,460 words, and has 80,135 distinct words.
+The defined vocabulary contains 3,110 words. 
 Many words then becomes unkown words, and could affect performance.
+The context, target training dataset contains 3,225,478 pairs.
 
 When creating the context, target pairs, we have used a context size of 12.
 The context size refers to the number of tokens before and after the target.
@@ -107,22 +108,27 @@ The model with the highest accuracy is chosen.
 
 ## Results 
 
-These were the chosen parameters and architecture --INSERT--
+These were the chosen parameters and architecture:
+
+| Architecture | Learning rate | Embedding dim |
+| --------------- | --------------- | --------------- |
+| CBOWDeep | 0.001 | 16 |
+
 
 -- TODO --
 Report on test performance, cosine similarity, embedding Visualization, and embedding arithmetic.
 
-![Training and validation loss of selected CBOW model](images/embedding_loss.png)
+![Training and validation loss of selected CBOW model](images/embedding_loss.png){ width=60% }
 
-![Training and validation accuracy of selected CBOW model](images/embedding_accuracy.png)
+![Training and validation accuracy of selected CBOW model](images/embedding_accuracy.png){ width=60% }
 
 ### Test performance
 
-The chosen model got a test accuracy of --INSERT--
+The chosen model got a test accuracy of 0.76%.
 
 ### Cosine similarity
 
-![Cosine similarity matrix](images/similarity_matrix.png)
+![Cosine similarity matrix](images/similarity_matrix.png){ width=60% }
 
 ### Visualization of embedding space
 
@@ -136,6 +142,7 @@ The chosen model got a test accuracy of --INSERT--
 
 The conjugation dataset is based on the generated embedding dataset.
 We only include targets that are _be_, _am_, _are_, _is_, _was_, _were_, _been_, _being_, _have_, _has_, _had_, _having_.
+The training data contains 190,515 context, target pairs.
 
 The context size/sequence length refers to the total size of context.
 
@@ -202,6 +209,7 @@ ConjugationRNN:
 | 16 | 8 | 0.1 |
 | 20 | 16 | 0.1|
 
+Common parameters:
 
 | Learning rate |
 | ------------- |
@@ -215,19 +223,26 @@ The model with the highest accuracy is chosen.
 
 ## Results
 
-These were the chosen parameters and architecture --INSERT--
+These were the chosen parameters and architecture:
+
+| Architecture | Learning rate | n_heads | W size |
+| --------------- | --------------- | --------------- | --------------- |
+| AttentionMLP | 0.0005 | 16 | 20 |
+
+
+The chosen model got a test accuracy of 61%.
 
 -- TODO -- 
 Report on performance and training time of models
 
-![Training and validation loss of selected model](images/conjugation_loss.png)
+![Training and validation loss of selected model](images/conjugation_loss.png){ width=60% }
 
-![Training and validation accuracy of selected model](images/conjugation_loss.png)
+![Training and validation accuracy of selected model](images/conjugation_loss.png){ width=60% }
 
 Time is taken on the whole training function,
 which includes computing loss and accuracy for both training and validation.
 
-![Average training times for architectures](images/conjugation_training_times.png)
+![Average training times for architectures](images/conjugation_training_times.png){ width=60% }
 
 # Task 3: Text generation
 
@@ -240,9 +255,9 @@ For the task of text generation, we generated a new dataset of context-target pa
 
 | Generation dataset type | Size |
 | ------------- | ------------------ |
-| Training data | <INSERT SIZE HERE> | 
-| Validation data | <INSERT SIZE HERE> | 
-| Test data | <INSERT SIZE HERE> | 
+| Training data | 3,225,469 | 
+| Validation data | 37,937 | 
+| Test data | 89,210 | 
 
 ### Model architectures
 
@@ -274,14 +289,29 @@ The training loop for the text generation models is identical to the one we used
 --TODO--
 The grid search gave the following results: 
 
---INSERT TABLE HERE --
+| Architecture | Learning rate | num_hiddens | num_layers | dropout |
+| --------------- | --------------- | --------------- | --------------- | --------------- |
+| GenerativeLSTM | 0.0005 | 16 | 8 | 0.1 |
+
+Test accuracy of 15.92%.
 
 <model_name> with <hyperparameters> achieved the highest accuracy. When looking at the training and validation loss, we see that the model ...
-![Training and validation loss of selected text generation model](images/text_generation_loss.png)
 
-![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png)
+![Training and validation loss of selected text generation model](images/text_generation_loss.png){ width=60% }
+
+![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png){ width=60% }
 
 ### Examples of generated sequences
 
 Include some example input and output sequences
+
+
+### Comparing RNN and LSTM
+
+Avearge accuracies:
+
+|  | RNN | LSTM |
+| --------------- | --------------- | --------------- |
+| Train accuracy | 9.7% | 10.15% |
+| Validation accuracy | 9.6% | 10.10% |
 

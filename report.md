@@ -53,6 +53,8 @@ embedding dimension as parameters. The first layer is a `nn.Embedding` for both.
 Relu is used as the activation function, and the last layer is passed through a log_softmax layer.
 
 
+\newpage
+
 ## Training and Selection
 ### Training data
 In addition to the 13 books provided on MittUiB, we downloaded these 23 books from The Gutenberg Project:
@@ -101,7 +103,7 @@ We used a batch size of 64, and trained 15 epochs for every run.
 | 0.008 | 20 |
 
 We have implemented a simple grid search, where;
-for each architectures, we train it for every defined hyperparameter combination.
+for each architecture, we train it for every defined hyperparameter combination.
 
 The model with the highest accuracy is chosen.
 
@@ -126,13 +128,38 @@ Report on test performance, cosine similarity, embedding Visualization, and embe
 
 The chosen model got a test accuracy of 0.76%.
 
+\newpage
+
 ### Cosine similarity
 
 ![Cosine similarity matrix](images/similarity_matrix.png){ width=60% }
 
 ### Visualization of embedding space
 
---INSERT-- plots from tensorflow projector
+Here are visualizations of some words used in our code.
+
+--TODO-- say something more about embeddings
+
+![](images/embedding_man.png){ width=50% }
+![](images/embedding_woman.png){ width=50% }
+\begin{figure}[!h]
+\caption{Embedding of man and woman, and their 10 most similar words}
+\end{figure}
+
+![](images/embedding_be.png){ width=50% }
+![](images/embedding_speak.png){ width=50% }
+\begin{figure}[!h]
+\caption{Embedding of be and speak, and their 10 most similar words}
+\end{figure}
+
+
+![](images/embedding_castle.png){ width=50% }
+![](images/embedding_me.png){ width=50% }
+\begin{figure}[!h]
+\caption{Embedding of castle and me, and their 10 most similar words}
+\end{figure}
+
+\newpage
 
 # Task 2: Conjugation of _have_ and _be_
 
@@ -243,6 +270,8 @@ Time is taken on the whole training function,
 which includes computing loss and accuracy for both training and validation.
 
 ![Average training times for architectures](images/conjugation_training_times.png){ width=60% }
+
+\newpage
 
 # Task 3: Text generation
 

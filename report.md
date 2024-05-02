@@ -36,7 +36,7 @@ Only words that appear 90 times or more are used in our vocabulary.
 
 The training dataset contains 4,384,460 words, and has 80,135 distinct words.
 The defined vocabulary contains 3,110 words. 
-Many words then becomes unkown words, and could affect performance.
+Many words then become unkown words, and could affect performance.
 The context, target training dataset contains 3,225,478 pairs.
 
 When creating the context, target pairs, we have used a context size of 12.
@@ -49,13 +49,14 @@ Unkown tokens (`<unk>`), and punctuations are excluded from the targets.
 We have defined two CBOW architectures, `CBOW` and `CBOWDeep`. Both take the vocab size, context size, and 
 embedding dimension as parameters. The first layer is a `nn.Embedding` for both.
 
-`CBOW` contains two fully connected layers after the embedding layer, while, `CBOWDeep` contains four.
+`CBOW` contains two fully connected layers after the embedding layer, while `CBOWDeep` contains four.
 Relu is used as the activation function, and the last layer is passed through a log_softmax layer.
 
 
 \newpage
 
 ## Training and Selection
+
 ### Training data
 In addition to the 13 books provided on MittUiB, we downloaded these 23 books from The Gutenberg Project:
 
@@ -85,8 +86,7 @@ In addition to the 13 books provided on MittUiB, we downloaded these 23 books fr
 | Paradise Lost | John Milton |
 | A Doll's House : a play | Henrik Ibsen |
 
--- TODO --
-Explain training procedure
+### Parameter search and selection
 
 For training we are using `Adam` as the optimizer, and `nn.NLLLoss` as the loss function.
 The weights for the vocabulary are passed to the loss function.
@@ -95,17 +95,18 @@ The function `src/train` is used for training in all three tasks.
 
 We used a batch size of 64, and trained 15 epochs for every run.
 
+We have implemented a simple grid search, where,
+for each architecture, we train it for every defined hyperparameter combination.
+The model with the highest accuracy is chosen.
+
+Parameters used in grid search:
+
 | Learning rate | Embedding dimension |
 | -------------- | --------------- |
 | 0.001 | 16 |
 | 0.001 | 20 |
 | 0.008 | 16 |
 | 0.008 | 20 |
-
-We have implemented a simple grid search, where;
-for each architecture, we train it for every defined hyperparameter combination.
-
-The model with the highest accuracy is chosen.
 
 
 ## Results 
@@ -132,6 +133,9 @@ The chosen model got a test accuracy of 0.76%.
 
 ### Cosine similarity
 
+In Figure 3, we can see an interesting grid pattern emerge in the similarity matrix. 
+--expand--
+
 ![Cosine similarity matrix](images/similarity_matrix.png){ width=60% }
 
 ### Visualization of embedding space
@@ -139,6 +143,13 @@ The chosen model got a test accuracy of 0.76%.
 Here are visualizations of some words used in our code.
 
 --TODO-- say something more about embeddings
+
+In Figure 4, we see that the words man and woman share many similar words. 
+
+In Figure 5, we see that the words be and speak are similar to other verbs.
+
+In Figure 6, we again see that the word me is similar to other pronouns like, you and him,
+while the word castle is similar with battle related words like, sword, bow, and guns.
 
 ![](images/embedding_man.png){ width=50% }
 ![](images/embedding_woman.png){ width=50% }
@@ -151,7 +162,6 @@ Here are visualizations of some words used in our code.
 \begin{figure}[!h]
 \caption{Embedding of be and speak, and their 10 most similar words}
 \end{figure}
-
 
 ![](images/embedding_castle.png){ width=50% }
 ![](images/embedding_me.png){ width=50% }
@@ -183,7 +193,7 @@ The `SimpleMLP` contains three fully connected layers after the embedding layer.
 The first linear layer takes an input of size `embedding_dim*max_len`.
 The last layer has an output size of 12, corresponding to the number of possible conjugations.
 All sizes of the layers in between are adjustable.
-Relu is used as activation function, and the output layer is not passed through any function.
+Relu is used as activation function, and the output layer is not passed through any activation function.
 
 The `AttentionMLP` contains a positional encoding layer, a multi-head attention layer,
 and a fully connected layer.
@@ -196,19 +206,17 @@ The size and number of hidden layers in the RNN are adjustable.
 
 ## Training
 
--- TODO -- 
-Explain training, and parameter search
-
 Here we are using `Adam` for the optimizer as well. `nn.CrossEntropyLoss` is used as the 
 loss function.
 
 We use the same approach for a simple grid search as in the previous task.
 For each model architecture we train with all possible hyper parameter combinations.
+Each architecture has its model specific parameters, in addition to the common parameters.
 Additionally we measure the average training time for each model architecture.
 
 We used a batch size of 64, and trained 30 epochs for every run.
 
---INSERT-- hyper parameters 
+The model with the highest accuracy is chosen.
 
 SimpleMLP:
 
@@ -245,7 +253,6 @@ Common parameters:
 | 0.0005 |
 
 
-The model with the highest accuracy is chosen.
 
 
 ## Results
@@ -264,10 +271,14 @@ Report on performance and training time of models
 
 ![Training and validation loss of selected model](images/conjugation_loss.png){ width=60% }
 
-![Training and validation accuracy of selected model](images/conjugation_loss.png){ width=60% }
+![Training and validation accuracy of selected model](images/conjugation_accuracy.png){ width=60% }
 
 Time is taken on the whole training function,
 which includes computing loss and accuracy for both training and validation.
+We see that in Figure 9, AttentionMLP is by far the slowest architecture to train, followed
+by ConjugationRNN, and then SimpleMLP.
+
+--Todo-- add explanaiton as to why.
 
 ![Average training times for architectures](images/conjugation_training_times.png){ width=60% }
 
@@ -324,7 +335,7 @@ The grid search gave the following results:
 
 Test accuracy of 15.92%.
 
-<model_name> with <hyperparameters> achieved the highest accuracy. When looking at the training and validation loss, we see that the model ...
+GenerativeLSTM with the above parameters achieved the highest accuracy. When looking at the training and validation loss, we see that the model ...
 
 ![Training and validation loss of selected text generation model](images/text_generation_loss.png){ width=60% }
 

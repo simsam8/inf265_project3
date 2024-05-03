@@ -348,6 +348,9 @@ Overall, the grid search determined that these were the optimal hyperparameters:
 | --------------- | --------------- | --------------- | --------------- | --------------- |
 | GenerativeLSTM | 0.0005 | 16 | 8 | 0.1 |
 
+### Beam search implementation
+The function `beam_search` in `utils.py` is a simple implementation of beam search with length normalization. It returns an ordered list of the candidate sequences that received the best normalized scores (log probability) across the whole search process. The max_len and beam_width parameter restricts the size of the search tree. The generated sequences can therefore be of a length from `input_sequence + 1` to `input_sequence + max_len`, though a length penalty > 0.5 tends to result in sequences of maximum length.
+
 ### Examples of generated sequences
 
 Prompt:  `The cat jumped over`
@@ -376,7 +379,7 @@ Generated sequence: `in the country of the country of the country of the country
 
 
 ### Evaluation
-This GenerativeLSTM model achieved an accuracy of 15.92% when evaluated on the task of next-token prediction. When looking at the training and validation loss, we see that the model converged nicely, with a slightly higher validation loss that seems to plateu after 12 epochs. The validation accuracy is higher than the training accuracy, so overall, these plots indicate that the model neither overfits nor underfits on our small dataset. However, the generation results are rather poor, as the model assigns a limited set of tokens a much higher log likelihood than the rest of the vocabulary. We therefore see that the model often generates phrases like "to the", "of the" and "the country" in never ending loops. 
+This GenerativeLSTM model achieved an accuracy of 15.92% when evaluated on the task of next-token prediction. When looking at the training and validation loss, we see that the model converged nicely, with a slightly higher validation loss that seems to plateu after 12 epochs. The validation accuracy is higher than the training accuracy, so overall, these plots indicate that the model neither overfits nor underfits on our small dataset. However, the generation results are rather poor, as the model assigns a limited set of tokens a much higher log likelihood than the rest of the vocabulary. We therefore see that the model often generates phrases like "to the", "of the" and "the country" in loops. 
 
 ![Training and validation loss of selected text generation model](images/text_generation_loss.png){ width=60% }
 

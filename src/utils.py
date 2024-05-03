@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from datetime import datetime
 import matplotlib.pyplot as plt
-
+import torch.nn.functional as F
 
 def set_device(device=None):
     """
@@ -158,7 +158,8 @@ def beam_search(
     max_len: int = 5,
     gen_sequences: int = 1,
     print_search_tree: bool = False,
-) -> torch.Tensor:
+    length_penalty: float = 0.4
+) -> list:
     """
     A simple beam search implementation for text generation.
     :param model: A recurrent model that outputs a log probability distribution over the entire vocabulary
@@ -167,15 +168,17 @@ def beam_search(
     :param max_len: The maximum length of the generated sequence/sentence.
     :param gen_sequences: The number of generated sequences to return. Returns top gen_sequences candidates from search tree.
     :param print_search_tree: Whether to print all candidates during the search (for debugging/reporting purposes)
+    :param length_penalty: The penalty used for length normalization. Lower penalty results in shorter sequences
     :return: A list of (sequence, sequence score) tuples.
     """
-    # Store model to device for faster inference
+    # Stores model to device for faster inference
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()  # Freeze model weights for inference
 
     # Gives intital sequence (prompt) a candidate score of 0
     sequences = [(init_token_indeces, 0.0)]
+    all_sequences = []
     mapping = torch.load("../generated_data/mapping.pt")
 
     # Search loop
@@ -188,26 +191,33 @@ def beam_search(
             input_seq = torch.LongTensor(seq).unsqueeze(0).to(device)
             # Runs inference
             with torch.no_grad():  # Avoid calculating gradients
-                log_probs = model(input_seq)
+                out = model(input_seq)
+                log_probs = F.log_softmax(out, dim=-1)
 
-            # Gets the index of the top k candidates
+            # Gets the index of the top candidates (highest log probability)
             top_k = torch.topk(log_probs, beam_width)
 
             # Keeps track of candidates
-            for i in range(beam_width):
+            for j in range(beam_width):
                 token_index, token_score = (
-                    top_k.indices[0][i].item(),
-                    top_k.values[0][i].item(),
+                    top_k.indices[0][j].item(),
+                    top_k.values[0][j].item(),
                 )
-                candidate = (seq + [token_index], token_score + seq_score)
-                candidates.append(candidate)
+                candidate_seq = seq + [token_index]
+                # Perform length normalization to avoid punishment of long sequences
+                normalized_score = (token_score + seq_score) / len(candidate_seq)**length_penalty
+                candidates.append((candidate_seq, normalized_score))
                 if print_search_tree:
                     print(
-                        f"{[mapping[token_index] for token_index in candidate[0]]} Score: {candidate[1]}"
+                        f"{[mapping[token_index] for token_index in candidate_seq]} Score: {normalized_score}"
                     )
 
         # Pruning
         ordered = sorted(candidates, key=lambda c: c[1], reverse=True)
+        all_sequences += ordered  # Keep track of all candidates we have used in the search
         sequences = ordered[:beam_width]
 
-    return sequences[gen_sequences - 1]
+    # The sequence(s) with the highest score(s) across all evaluated sequences is returned
+    all_sequences_ordered = sorted(all_sequences, key=lambda c: c[1], reverse=True)
+    
+    return all_sequences_ordered[gen_sequences - 1]

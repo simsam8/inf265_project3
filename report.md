@@ -118,38 +118,45 @@ These were the chosen parameters and architecture:
 | CBOWDeep | 0.001 | 16 |
 
 
--- TODO --
-Report on test performance, cosine similarity, embedding Visualization, and embedding arithmetic.
-
 ![Training and validation loss of selected CBOW model](images/embedding_loss.png){ width=60% }
 
 ![Training and validation accuracy of selected CBOW model](images/embedding_accuracy.png){ width=60% }
 
 ### Test performance
 
-The chosen model got a test accuracy of 0.76%.
+The chosen model got a test accuracy of 0.76%. As the training data includes a lot of 
+unkown words, performance is expected to not be as high. However, compared to 
+random guessing with an accuracy of 0.032%, our embedding model performs somewhat better.
 
 \newpage
 
 ### Cosine similarity
 
-In Figure 3, we can see an interesting grid pattern emerge in the similarity matrix. 
---expand--
+As expected, each word is most similar to itself, seen as the yellow diagonal linear
+through the similarity matrix in Figure 3.
+Additionally we can see an interesting grid pattern emerge in the similarity matrix. 
+Some words are less similar to most words in the vocabulary, while others are similar
+to many words.
 
-![Cosine similarity matrix](images/similarity_matrix.png){ width=60% }
+Words with higher frequencies appear more often in the context of target words,
+and could possibly explain this. Words with the lowest possible frequency of 90,
+rarely appear in context with other words, and thus becomes less similar to most words.
+
+![Cosine similarity matrix](images/similarity_matrix.png){ width=50% }
+
+\newpage
 
 ### Visualization of embedding space
 
-Here are visualizations of some words used in our code.
-
---TODO-- say something more about embeddings
-
-In Figure 4, we see that the words man and woman share many similar words. 
-
-In Figure 5, we see that the words be and speak are similar to other verbs.
-
-In Figure 6, we again see that the word me is similar to other pronouns like, you and him,
-while the word castle is similar with battle related words like, sword, bow, and guns.
+Our trained embedding seems to pick up both the type of word, and in the 
+context a word is used. 
+In Figure 4, the embeddings of man and woman seems to show different roles.
+The word man is similar to action, priest, and position. While woman is similar to words related to family, like 
+son, man, friend, and girls.
+The verbs be and speak in Figure 5, are both grouped with other verbs, and even verbs of similar meaning,
+such as speak -> say and think, and be -> am and become.
+In Figure 6, we can see that the word castle is grouped with similar objects which could be found
+in a castle. While the word me is grouped with other pronouns such as him, it, and us.
 
 ![](images/embedding_man.png){ width=50% }
 ![](images/embedding_woman.png){ width=50% }
@@ -264,10 +271,9 @@ These were the chosen parameters and architecture:
 | AttentionMLP | 0.0005 | 16 | 20 |
 
 
-The chosen model got a test accuracy of 61%.
-
--- TODO -- 
-Report on performance and training time of models
+The chosen model got a test accuracy of 61%. This is not too bad, as random guessing
+would yield an accuracy of 8.33%.
+In addition, the chosen model does not seem to overfit or underfit.
 
 ![Training and validation loss of selected model](images/conjugation_loss.png){ width=60% }
 
@@ -278,7 +284,8 @@ which includes computing loss and accuracy for both training and validation.
 We see that in Figure 9, AttentionMLP is by far the slowest architecture to train, followed
 by ConjugationRNN, and then SimpleMLP.
 
---Todo-- add explanaiton as to why.
+The computational complexity of attention mechanisms are larger than that of RNNs, which 
+in turn increases the training time.
 
 ![Average training times for architectures](images/conjugation_training_times.png){ width=60% }
 

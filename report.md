@@ -9,7 +9,7 @@ header-includes: |
     \usepackage{subcaption}
 ---
 # Introduction
-This report aims to explain our approach and design choices for defining, training and evaluating sequence models for three language modelling tasks. Additionally, we will discuss the performance of our models and evaluate our implementations.
+This report aims to explain our approach and design choices for defining, training and evaluating sequence models for three language modelling tasks. Additionally, we will discuss the performance of our models and evaluate our implementation.
 
 For general information and setup guidance, please refer to the [README](README.md).
 
@@ -17,7 +17,7 @@ For general information and setup guidance, please refer to the [README](README.
 There is some overlap, but here is a general overview of what each project member contributed with: 
 
 - **Simon Vedaa**: Word embedding and conjugation modelling, loss functions, preprocessing, model training, evaluation and selection, plotting, documentation and project report
-- **Sebastion Røkholt**: Generation modelling, beam search, model evaluation, code documentation and report
+- **Sebastion Røkholt**: Generation modelling, beam search, model evaluation, code documentation and project report
 
 \newpage
 
@@ -29,28 +29,21 @@ There is some overlap, but here is a general overview of what each project membe
 
 For tokenization we are using the basic-english tokenizer from `torchtext`.
 We exclude tokens which are digits, names, and spaces.
-Only words that appear 90 times or more are used in our vocabulary.
 
 
-### Dataset
+### Dataset and vocabulary
 
-The training dataset contains 4,384,460 words, and has 80,135 distinct words.
-The defined vocabulary contains 3,110 words. 
-Many words then become unkown words, and could affect performance.
-The context, target training dataset contains 3,225,478 pairs.
+The training dataset contains 4,384,460 tokens in total. There are 80,135 unique tokens; however, the vocabulary we have constructed for the embedding model only contains 3,110 tokens, as we decided to only include words with a training data frequency greater than 90. Since the usage frequency of words in the English language has a very long tail, 96% of all unique words become unkown tokens. This is likely to greatly affect the performance of the models.
 
-When creating the context, target pairs, we have used a context size of 12.
-The context size refers to the number of tokens before and after the target.
-The total context then becomes 2*context_size.
-Unkown tokens (`<unk>`), and punctuations are excluded from the targets.
+Sequence models require the data to be in a context, target format, so we generated new training, validation and test datasets with a context size of 12. The context size refers to the number of tokens before and after the target. The generated training dataset contains 3,225,478 context-target pairs. The total context then becomes 2*context_size. We have excluded the unknown token (`<unk>`) and punctuations from the targets.
 
 ### CBOW Architecture
 
 We have defined two CBOW architectures, `CBOW` and `CBOWDeep`. Both take the vocab size, context size, and 
-embedding dimension as parameters. The first layer is a `nn.Embedding` for both.
+embedding dimension as hyperparameters. The first layer is a `nn.Embedding` for both.
 
 `CBOW` contains two fully connected layers after the embedding layer, while `CBOWDeep` contains four.
-Relu is used as the activation function, and the last layer is passed through a log_softmax layer.
+We use ReLU as the activation function for all layers except for the output layer, which uses a log_softmax function. 
 
 
 \newpage
@@ -86,12 +79,12 @@ In addition to the 13 books provided on MittUiB, we downloaded these 23 books fr
 | Paradise Lost | John Milton |
 | A Doll's House : a play | Henrik Ibsen |
 
-### Parameter search and selection
+### Model training and selection
 
 For training we are using `Adam` as the optimizer, and `nn.NLLLoss` as the loss function.
 The weights for the vocabulary are passed to the loss function.
 
-The function `src/train` is used for training in all three tasks.
+The function `src.utils.train` is used for training in all three tasks.
 
 We used a batch size of 64, and trained 15 epochs for every run.
 
@@ -109,7 +102,7 @@ Parameters used in grid search:
 | 0.008 | 20 |
 
 
-## Results 
+## Evaluation
 
 These were the chosen parameters and architecture:
 
@@ -122,11 +115,9 @@ These were the chosen parameters and architecture:
 
 ![Training and validation accuracy of selected CBOW model](images/embedding_accuracy.png){ width=60% }
 
-### Test performance
-
-The chosen model got a test accuracy of 0.76%. As the training data includes a lot of 
-unkown words, performance is expected to not be as high. However, compared to 
-random guessing with an accuracy of 0.032%, our embedding model performs somewhat better.
+The selected model got a test accuracy of 0.76%. As the training data includes a lot of 
+unkown words, we expected the performance to be low. When compared to 
+random guesses, which had an accuracy of 0.032%, our embedding model performs slightly better.
 
 \newpage
 
@@ -349,7 +340,7 @@ Overall, the grid search determined that these were the optimal hyperparameters:
 | GenerativeLSTM | 0.0005 | 16 | 8 | 0.1 |
 
 ### Beam search implementation
-The function `beam_search` in `utils.py` is a simple implementation of beam search with length normalization. It returns an ordered list of the candidate sequences that received the best normalized scores (log probability) across the whole search process. The max_len and beam_width parameter restricts the size of the search tree. The generated sequences can therefore be of a length from `input_sequence + 1` to `input_sequence + max_len`, though a length penalty > 0.5 tends to result in sequences of maximum length.
+The function `beam_search` in `utils.py` is a basic implementation of beam search with length normalization. It returns an ordered list of the candidate sequences that received the best normalized scores (log probability) across all candidate sequences evaluated over the entire search process. The max_len and beam_width parameter restricts the size of the search tree. The generated sequences can therefore be of a length from `input_sequence + 1` to `input_sequence + max_len`, though a length penalty > 0.5 tends to result in sequences of maximum length.
 
 ### Examples of generated sequences
 

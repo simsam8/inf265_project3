@@ -335,45 +335,50 @@ The function `beam_search` in `utils.py` is a basic implementation of beam searc
 
 ### Examples of generated sequences
 
+Max generation length: 10, beam width: 3, length penalty: 0.4, generated sequences: 1
 
-Max generation length: 5, beam width: 3
+Prompt:  `the cat jumped over`
 
-Prompt:  `The cat jumped over`
+Generated sequence:  `the king of the country of the country of the`
 
-Generated sequence:  `to the country of the`
+Prompt: `what is the meaning of`
 
-Max generation length: 5, beam width: 3
+Generated sequence:  `the`
 
-Prompt: `To be or not to be?`
+Prompt:  `i have never`
 
-Generated sequence:  `he had been to the`
+Generated sequence:  `been`
 
-Max generation length: 6, beam width: 3
+Prompt:  `the woman was sitting`
 
-Prompt:  `In the morning, we`
+Generated sequence: `in the country of the country of the`
 
-Generated sequence:  `will not not be to be`
+Prompt:  `as i opened the`
 
-Max generation length: 5, beam width: 10
+Generated sequence: `king of the country of the country of the`
 
-Prompt:  `The meaning of life is`
+Prompt:  `to be or not to be ?`
 
-Generated sequence: `to go to the`
+Generated sequence: `the king of the country of the`
 
-Max generation length: 5, beam width: 30
+Prompt:  `a king and queen once upon a time`
 
-Prompt:  `The meaning of life is`
+Generated sequence: `of`
 
-Generated sequence: `in the country of the`
+Prompt:  `suddenly the door opened and`
 
-Max generation length: 12, beam width: 10
+Generated sequence: `to the country of the country of the`
 
-Prompt:  `The meaning of life is`
+Prompt:  `in the morning we`
 
-Generated sequence: `in the country of the country of the country of the country`
+Generated sequence: `will not have been in the country of the`
 
+Prompt:  `the meaning of life is`
+
+Generated sequence: `a man of the country of the country of the`
 
 ### Evaluation
+
 This GenerativeLSTM model achieved an accuracy of 15.92% when evaluated on the task of next-token prediction. When looking at the training and validation loss, we see that the model converged nicely, with a slightly higher validation loss that seems to plateu after 12 epochs. The validation accuracy is higher than the training accuracy, so overall, these plots indicate that the model neither overfits nor underfits on our small dataset. However, the generation results are rather poor, as the model assigns a limited set of tokens a much higher log likelihood than the rest of the vocabulary. We therefore see that the model often generates phrases like "to the", "of the" and "the country" in loops. 
 
 ![Training and validation loss of selected text generation model](images/text_generation_loss.png){ width=60% }

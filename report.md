@@ -289,9 +289,9 @@ by ConjugationRNN, and then SimpleMLP.
 ## Approach and design choices
 
 ### Dataset
-For the task of text generation, we generated a new dataset of context-target pairs where the context only consist of `context_size` number of tokens *before* the target. The code for creating this dataset is located in the `create_dataset` function in the [generation.ipynb](https://github.com/simsam8/inf265_project3/blob/main/notebooks/generation.ipynb) notebook, which takes a tokenized dataset as input. 
+For the task of text generation, we generated a new dataset of context-target pairs where the context only consists of `context_size` number of tokens *before* the target. The code for creating this dataset is located in the `create_dataset` function in the [generation.ipynb](https://github.com/simsam8/inf265_project3/blob/main/notebooks/generation.ipynb) notebook, which takes a tokenized dataset as input. 
 
-| Generation dataset type | Size |
+| Generation dataset type | Size (number of tokens) |
 | ------------- | ------------------ |
 | Training data | 3,225,469 | 
 | Validation data | 37,937 | 
@@ -299,7 +299,7 @@ For the task of text generation, we generated a new dataset of context-target pa
 
 ### Model architectures
 
-We decided that we wanted to compare RNN and LSTM-based architectures, because we were curious to see whether the LSTMs would outperform the "basic" RNNs for this task. Both architecture variants were similar, as they consisted of our previously trained embedding layer (with frozen weights) of size `vocab_size`\*`embedding_dim`, one or multiple recurrent (RNN/LSTM) layers, and a fully connected output layer of size `num_hiddens`\*`vocab_size`. 
+We wanted to compare RNN and LSTM-based architectures, because we were curious to see whether the LSTMs would outperform the "basic" RNNs for this task. Both architecture variants were similar, as they consisted of our previously trained embedding layer (with frozen weights) of size `vocab_size`\*`embedding_dim`, one or multiple recurrent (RNN/LSTM) layers, and a fully connected output layer of size `num_hiddens`\*`vocab_size`. 
 
 The hyperparameters were the same as for task 2; the number of hidden recurrent layers, the number of hidden units and a dropout parameter, as well as the optimizer's learning rate parameter.
 
@@ -332,7 +332,7 @@ The average accuracies during grid search for the RNN- and LSTM-based models wer
 | Train accuracy | 9.7% | 10.15% |
 | Validation accuracy | 9.6% | 10.10% |
 
-As expected, the LSTM-based models performed slightly better than the RNN-based ones, which we think is likely due to the fact that LSTMs are more robust, e.g. they can handle much longer input sequences because they don't suffer from exploding gradients. In the context of natural language processing, it is very beneficial to be able to "remember" information from the start of a long input sequences.
+The LSTM-based models performed slightly better than the RNN-based ones, which we think is likely due to the fact that LSTMs are more robust, e.g. they can handle much longer input sequences because they don't suffer from exploding gradients. In the context of natural language processing, it is very beneficial to be able to "remember" information from the start of a long input sequences.
 
 ### Selection
 Overall, the grid search determined that these were the optimal hyperparameters:
@@ -375,4 +375,4 @@ This GenerativeLSTM model achieved an accuracy of 15.92% when evaluated on the t
 
 ![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png){ width=60% }
 
-As expected, the model's relatively low accuracy supports the claim that effective language models require both much larger training datasets and a significantly higher number of model parameters.
+As expected, the model's relatively low accuracy supports the claim that effective language models require both much larger training datasets and a significantly higher number of model parameters. However, the accuracy metric alone does not provide a good estimate of the model's ability to generate good sequences, as we are only testing to see if the model can predict the correct target word from the preceding context/prompt/input sequence. It would be more appropriate to calculate the model's Perplexity, along with the BLEU or METEOR score and perform an evaluation based on these results. 

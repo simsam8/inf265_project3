@@ -139,15 +139,13 @@ rarely appear in context with other words, and thus becomes less similar to most
 
 ### Visualization of embedding space
 
-Our trained embedding seems to pick up both the type of word, and in the 
-context a word is used. 
-In Figure 4, the embeddings of man and woman seems to show different roles.
-The word man is similar to action, priest, and position. While woman is similar to words related to family, like 
-son, man, friend, and girls.
-The verbs be and speak in Figure 5, are both grouped with other verbs, and even verbs of similar meaning,
-such as speak -> say and think, and be -> am and become.
-In Figure 6, we can see that the word castle is grouped with similar objects which could be found
-in a castle. While the word me is grouped with other pronouns such as him, it, and us.
+The embedding seems to capture the word class and some semantic qualities. In Figure 4, the embeddings of man and woman seems to represent a difference in roles.
+The word `man` is similar to `action`, `priest`, and `position`, while `woman` is similar to words related to `family`, like 
+`son`, `man`, `friend`, and `girls`.
+The verbs `be` and `speak` in Figure 5, are both grouped with other verbs, and are close to verbs of similar meaning,
+such as `speak` -> `say` and `think`, and `be` -> `am` and `become`.
+In Figure 6, we can see that the word `castle` is grouped with similar objects which could be found
+in a `castle`, while the word `me` is grouped with other pronouns such as `him`, `it`, and `us`.
 
 ![](images/embedding_man.png){ width=50% }
 ![](images/embedding_woman.png){ width=50% }
@@ -175,48 +173,45 @@ in a castle. While the word me is grouped with other pronouns such as him, it, a
 
 ### Dataset
 
-The conjugation dataset is based on the generated embedding dataset.
-We only include targets that are _be_, _am_, _are_, _is_, _was_, _were_, _been_, _being_, _have_, _has_, _had_, _having_.
-The training data contains 190,515 context, target pairs.
+The conjugation dataset is a subset of the generated embedding dataset, such that we only include the words/tokens _be_, _am_, _are_, _is_, _was_, _were_, _been_, _being_, _have_, _has_, _had_ and _having_ as targets.
+The training dataset contains 190,515 context, target pairs.
 
-The context size/sequence length refers to the total size of context.
+In this case, the _context size_/_sequence length_ refers to the total size of the context window.
 
 ### Model architectures
 
-We have defined three architectures for the conjugation task, `SimpleMLP`, `AttentionMLP`, and `ConjugationRNN`.
-Each model has an embedding layer as its first layer, which is frozen during initalization.
-Additionally each architecture includes a parameter for the max length of the input sequence.
+We have defined three network architectures for the conjugation task; `SimpleMLP`, `AttentionMLP`, and `ConjugationRNN`.
+Each architecture has an embedding layer as its first layer, which is frozen during initalization.
+Additionally, they each includes a parameter for the max length of the input sequence.
 
-The `SimpleMLP` contains three fully connected layers after the embedding layer.
-The first linear layer takes an input of size `embedding_dim*max_len`.
-The last layer has an output size of 12, corresponding to the number of possible conjugations.
+`SimpleMLP` contains three fully connected layers after the embedding layer.
+The first linear layer takes an input of size `embedding_dim*max_len`, while
+the final layer has an output size of 12, corresponding to the number of possible conjugations.
 All sizes of the layers in between are adjustable.
-Relu is used as activation function, and the output layer is not passed through any activation function.
+`ReLU` is used as activation function for the hidden layers, while the final layer simply outputs the logits without any activation function.
 
-The `AttentionMLP` contains a positional encoding layer, a multi-head attention layer,
+The `AttentionMLP` architecture contains a positional encoding layer, a multi-head attention layer,
 and a fully connected layer.
 The multi-head attention layer is implemented by chaining multiple `SingleHead` layer using 
 `nn.ModuleList`, and then concatenating their outputs and passing them through a fully connected layer.
 Number of heads and the size of key, query, and value matrices are adjustable.
 
-The `ConjugationRNN` contains a single RNN layer and a fully connected layer. 
+`ConjugationRNN` contains a single RNN layer and a fully connected layer. 
 The size and number of hidden layers in the RNN are adjustable.
 
 ## Training
 
-Here we are using `Adam` for the optimizer as well. `nn.CrossEntropyLoss` is used as the 
+Here we are using `Adam` for the optimizer and `nn.CrossEntropyLoss` as the 
 loss function.
 
-We use the same approach for a simple grid search as in the previous task.
-For each model architecture we train with all possible hyper parameter combinations.
-Each architecture has its model specific parameters, in addition to the common parameters.
-Additionally we measure the average training time for each model architecture.
+We use the same grid search approach as in the previous task.
+For each model architecture we train with all hyperparameter combinations.
+Each architecture has model-specific hyperparameters in addition to the common ones.
+Additionally, we measure the average training time for each model architecture.
 
-We used a batch size of 64, and trained 30 epochs for every run.
+We used a batch size of 64 for all models, trained 30 epochs for every run, and selected the model with the highest accuracy.
 
-The model with the highest accuracy is chosen.
-
-SimpleMLP:
+`SimpleMLP`:
 
 | l1 | l2 |
 | -------------- | --------------- |
@@ -225,7 +220,7 @@ SimpleMLP:
 | 256 | 256 |
 
 
-AttentionMLP:
+`AttentionMLP`:
 
 | n_heads | W size |
 | -------------- | --------------- |
@@ -234,7 +229,7 @@ AttentionMLP:
 | 16 | 20 |
 
 
-ConjugationRNN:
+`ConjugationRNN`:
 
 | num_hidden | num_layers | dropout |
 | --------------- | --------------- | --------------- |
@@ -242,7 +237,7 @@ ConjugationRNN:
 | 16 | 8 | 0.1 |
 | 20 | 16 | 0.1|
 
-Common parameters:
+Common hyperparameters:
 
 | Learning rate |
 | ------------- |
@@ -255,7 +250,7 @@ Common parameters:
 
 ## Results
 
-These were the chosen parameters and architecture:
+These were the selected hyperparameters and architecture:
 
 | Architecture | Learning rate | n_heads | W size |
 | --------------- | --------------- | --------------- | --------------- |
@@ -270,13 +265,9 @@ In addition, the chosen model does not seem to overfit or underfit.
 
 ![Training and validation accuracy of selected model](images/conjugation_accuracy.png){ width=60% }
 
-Time is taken on the whole training function,
-which includes computing loss and accuracy for both training and validation.
-We see that in Figure 9, AttentionMLP is by far the slowest architecture to train, followed
-by ConjugationRNN, and then SimpleMLP.
-
-The computational complexity of attention mechanisms are larger than that of RNNs, which 
-in turn increases the training time.
+For each model, we time the training process and compute the loss and accuracy for both training and validation sets.
+As seen in Figure 9, `AttentionMLP` is by far the slowest architecture to train, followed
+by `ConjugationRNN`, and then `SimpleMLP`. This is largely due to the computational complexity of training attention mechanisms.
 
 ![Average training times for architectures](images/conjugation_training_times.png){ width=60% }
 

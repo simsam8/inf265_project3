@@ -325,12 +325,14 @@ The training loop for the text generation models is identical to the one we used
 
 ### Comparing RNN and LSTM
 
-Tje average accuracies during grid search for the RNN- and LSTM-based models were:
+The average accuracies during grid search for the RNN- and LSTM-based models were:
 
 |  | RNN | LSTM |
 | --------------- | --------------- | --------------- |
 | Train accuracy | 9.7% | 10.15% |
 | Validation accuracy | 9.6% | 10.10% |
+
+As expected, the LSTM-based models performed slightly better than the RNN-based ones, which we think is likely due to the fact that LSTMs are more robust, e.g. they can handle much longer input sequences because they don't suffer from exploding gradients. In the context of natural language processing, it is very beneficial to be able to "remember" information from the start of a long input sequences.
 
 ### Selection
 Overall, the grid search determined that these were the optimal hyperparameters:
@@ -338,15 +340,6 @@ Overall, the grid search determined that these were the optimal hyperparameters:
 | Architecture | Learning rate | num_hiddens | num_layers | dropout |
 | --------------- | --------------- | --------------- | --------------- | --------------- |
 | GenerativeLSTM | 0.0005 | 16 | 8 | 0.1 |
-
-### Evaluation
-This GenerativeLSTM model achieved an accuracy of 15.92%. When looking at the training and validation loss, we see that the model converged nicely, with a slightly higher validation loss that seems to plateu after 12 epochs. The validation accuracy is higher than the training accuracy, so overall, these plots indicate that the model neither overfits nor underfits on the data. 
-
-![Training and validation loss of selected text generation model](images/text_generation_loss.png){ width=60% }
-
-![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png){ width=60% }
-
-As expected, the model's relatively low accuracy supports the claim that effective language models require both much larger training datasets and a significantly higher number of model parameters.
 
 ### Examples of generated sequences
 
@@ -375,4 +368,11 @@ Max generation length: 12, beam width: 10
 Generated sequence: `in the country of the country of the country of the country`
 
 
+### Evaluation
+This GenerativeLSTM model achieved an accuracy of 15.92% when evaluated on the task of next-token prediction. When looking at the training and validation loss, we see that the model converged nicely, with a slightly higher validation loss that seems to plateu after 12 epochs. The validation accuracy is higher than the training accuracy, so overall, these plots indicate that the model neither overfits nor underfits on our small dataset. However, the generation results are rather poor, as the model assigns a limited set of tokens a much higher log likelihood than the rest of the vocabulary. We therefore see that the model often generates phrases like "to the", "of the" and "the country" in never ending loops. 
 
+![Training and validation loss of selected text generation model](images/text_generation_loss.png){ width=60% }
+
+![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png){ width=60% }
+
+As expected, the model's relatively low accuracy supports the claim that effective language models require both much larger training datasets and a significantly higher number of model parameters.

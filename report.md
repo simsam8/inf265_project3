@@ -291,8 +291,6 @@ by ConjugationRNN, and then SimpleMLP.
 ### Dataset
 For the task of text generation, we generated a new dataset of context-target pairs where the context only consist of `context_size` number of tokens *before* the target. The code for creating this dataset is located in the `create_dataset` function in the [generation.ipynb](https://github.com/simsam8/inf265_project3/blob/main/notebooks/generation.ipynb) notebook, which takes a tokenized dataset as input. 
 
--- TODO --
-
 | Generation dataset type | Size |
 | ------------- | ------------------ |
 | Training data | 3,225,469 | 
@@ -301,15 +299,13 @@ For the task of text generation, we generated a new dataset of context-target pa
 
 ### Model architectures
 
--- TODO --
 We decided that we wanted to compare RNN and LSTM-based architectures, because we were curious to see whether the LSTMs would outperform the "basic" RNNs for this task. Both architecture variants were similar, as they consisted of our previously trained embedding layer (with frozen weights) of size `vocab_size`\*`embedding_dim`, one or multiple recurrent (RNN/LSTM) layers, and a fully connected output layer of size `num_hiddens`\*`vocab_size`. 
 
-The hyperparameters were the same as for task 2; the number of hidden recurrent layers, the number of hidden units and a dropout parameter.
+The hyperparameters were the same as for task 2; the number of hidden recurrent layers, the number of hidden units and a dropout parameter, as well as the optimizer's learning rate parameter.
 
 ## Model training
 
--- TODO -- 
-The training loop for the text generation models is identical to the one we used to train the conjugation models. As before, we are using `Adam` for the optimizer and `nn.CrossEntropyLoss` for the loss function with a batch size of 64. We trained 20 epochs for every run and ranked them on their target token prediction accuracy.
+The training loop for the text generation models is identical to the one we used to train the conjugation models. As before, we are using `Adam` for the optimizer and `nn.CrossEntropyLoss` for the loss function with a batch size of 64. We performed a grid search over hyperparameters where we trained the models for 20 epochs and ranked them on their target token prediction accuracy.
 
 
 | num_hidden | num_layers | dropout |
@@ -325,33 +321,58 @@ The training loop for the text generation models is identical to the one we used
 | 0.01 |
 | 0.0005 |
 
-## Model selection
---TODO--
-The grid search gave the following results: 
-
-| Architecture | Learning rate | num_hiddens | num_layers | dropout |
-| --------------- | --------------- | --------------- | --------------- | --------------- |
-| GenerativeLSTM | 0.0005 | 16 | 8 | 0.1 |
-
-Test accuracy of 15.92%.
-
-GenerativeLSTM with the above parameters achieved the highest accuracy. When looking at the training and validation loss, we see that the model ...
-
-![Training and validation loss of selected text generation model](images/text_generation_loss.png){ width=60% }
-
-![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png){ width=60% }
-
-### Examples of generated sequences
-
-Include some example input and output sequences
-
+## Model selection and evaluation
 
 ### Comparing RNN and LSTM
 
-Avearge accuracies:
+Tje average accuracies during grid search for the RNN- and LSTM-based models were:
 
 |  | RNN | LSTM |
 | --------------- | --------------- | --------------- |
 | Train accuracy | 9.7% | 10.15% |
 | Validation accuracy | 9.6% | 10.10% |
+
+### Selection
+Overall, the grid search determined that these were the optimal hyperparameters:
+
+| Architecture | Learning rate | num_hiddens | num_layers | dropout |
+| --------------- | --------------- | --------------- | --------------- | --------------- |
+| GenerativeLSTM | 0.0005 | 16 | 8 | 0.1 |
+
+### Evaluation
+This GenerativeLSTM model achieved an accuracy of 15.92%. When looking at the training and validation loss, we see that the model converged nicely, with a slightly higher validation loss that seems to plateu after 12 epochs. The validation accuracy is higher than the training accuracy, so overall, these plots indicate that the model neither overfits nor underfits on the data. 
+
+![Training and validation loss of selected text generation model](images/text_generation_loss.png){ width=60% }
+
+![Training and validation accuracy of selected text generation model](images/text_generation_accuracy.png){ width=60% }
+
+As expected, the model's relatively low accuracy supports the claim that effective language models require both much larger training datasets and a significantly higher number of model parameters.
+
+### Examples of generated sequences
+
+Prompt:  `The cat jumped over`
+Max generation length: 5, beam width: 3
+Generated sequence:  `to the country of the`
+
+Prompt: `To be or not to be?`
+Max generation length: 5, beam width: 3
+Generated sequence:  `he had been to the`
+
+Prompt:  `In the morning, we`
+Max generation length: 6, beam width: 3
+Generated sequence:  `will not not be to be`
+
+Prompt:  `The meaning of life is`
+Max generation length: 5, beam width: 10
+Generated sequence: `to go to the`
+
+Prompt:  `The meaning of life is`
+Max generation length: 5, beam width: 30
+Generated sequence: `in the country of the`
+
+Prompt:  `The meaning of life is`
+Max generation length: 12, beam width: 10
+Generated sequence: `in the country of the country of the country of the country`
+
+
 

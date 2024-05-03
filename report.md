@@ -145,7 +145,7 @@ The word `man` is similar to `action`, `priest`, and `position`, while `woman` i
 The verbs `be` and `speak` in Figure 5, are both grouped with other verbs, and are close to verbs of similar meaning,
 such as `speak` -> `say` and `think`, and `be` -> `am` and `become`.
 In Figure 6, we can see that the word `castle` is grouped with similar objects which could be found
-in a `castle`, while the word `me` is grouped with other pronouns such as `him`, `it`, and `us`.
+in a `castle` like `sword`, `bow`, and `guns`, while the word `me` is grouped with other pronouns such as `him`, `it`, and `us`.
 
 ![](images/embedding_man.png){ width=50% }
 ![](images/embedding_woman.png){ width=50% }
@@ -192,7 +192,7 @@ All sizes of the layers in between are adjustable.
 
 The `AttentionMLP` architecture contains a positional encoding layer, a multi-head attention layer,
 and a fully connected layer.
-The multi-head attention layer is implemented by chaining multiple `SingleHead` layer using 
+The multi-head attention layer is implemented by chaining multiple `SingleHead` layers using 
 `nn.ModuleList`, and then concatenating their outputs and passing them through a fully connected layer.
 Number of heads and the size of key, query, and value matrices are adjustable.
 
@@ -335,28 +335,41 @@ The function `beam_search` in `utils.py` is a basic implementation of beam searc
 
 ### Examples of generated sequences
 
-Prompt:  `The cat jumped over`
+
 Max generation length: 5, beam width: 3
+
+Prompt:  `The cat jumped over`
+
 Generated sequence:  `to the country of the`
 
-Prompt: `To be or not to be?`
 Max generation length: 5, beam width: 3
+
+Prompt: `To be or not to be?`
+
 Generated sequence:  `he had been to the`
 
-Prompt:  `In the morning, we`
 Max generation length: 6, beam width: 3
+
+Prompt:  `In the morning, we`
+
 Generated sequence:  `will not not be to be`
 
-Prompt:  `The meaning of life is`
 Max generation length: 5, beam width: 10
+
+Prompt:  `The meaning of life is`
+
 Generated sequence: `to go to the`
 
-Prompt:  `The meaning of life is`
 Max generation length: 5, beam width: 30
-Generated sequence: `in the country of the`
 
 Prompt:  `The meaning of life is`
+
+Generated sequence: `in the country of the`
+
 Max generation length: 12, beam width: 10
+
+Prompt:  `The meaning of life is`
+
 Generated sequence: `in the country of the country of the country of the country`
 
 
